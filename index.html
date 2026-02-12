@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breathe, Jeeya 🌸</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* --- 1. VISUAL THEME (Sky Blue & Baby Pink) --- */
+        :root {
+            --bg-color: #87CEEB;       /* Sky Blue */
+            --text-color: #4A4A4A;     /* Soft Charcoal */
+            --primary: #F4C2C2;        /* Baby Pink */
+            --accent: #FFD6A5;         /* Pastel Orange */
+            --love: #FFADAD;           /* Pastel Red */
+            --glass: rgba(255, 255, 255, 0.85);
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; 
+            position: relative;
+        }
+
+        /* --- 2. FLOATING HEARTS BACKGROUND --- */
+        .heart-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            color: white;
+            opacity: 0.6;
+            font-size: 1.5rem;
+            animation: floatUp 10s linear infinite;
+            bottom: -50px;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- 3. UTILITIES & ANIMATIONS --- */
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 1s ease forwards; position: relative; z-index: 10; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        
+        /* --- 4. LOGIN SCREEN --- */
+        #login-screen {
+            text-align: center;
+            background: var(--glass);
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            max-width: 90%;
+            width: 400px;
+        }
+
+        h1 { font-weight: 600; margin-bottom: 0.5rem; color: var(--text-color); }
+        p { margin-bottom: 2rem; color: #666; }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #fff;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            outline: none;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: #4A4A4A; /* Darker text for readability on pink */
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+            font-weight: 600;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        /* --- 5. DASHBOARD --- */
+        #dashboard {
+            width: 100%;
+            max-width: 500px;
+            height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .greeting { font-size: 1.2rem; font-weight: 600; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        .countdown-card {
+            background: var(--glass);
+            padding: 2rem;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            backdrop-filter: blur(5px);
+        }
+        .days-left { font-size: 4.5rem; font-weight: 600; color: #4A4A4A; line-height: 1; }
+        .days-label { font-size: 1.2rem; color: #666; margin-top: 0.5rem; font-weight: 600; }
+        .date-display { font-size: 0.8rem; color: #888; margin-top: 1rem; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        
+        .card-btn {
+            background: var(--glass);
+            border: none;
+            padding: 1.2rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            text-align: center;
+            transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        .card-btn:active { transform: scale(0.95); }
+        .icon { font-size: 2rem; }
+
+        /* --- 6. MODALS --- */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(135, 206, 235, 0.95);
+            z-index: 100;
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; padding: 2rem; text-align: center;
+        }
+        .close-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 2rem; cursor: pointer; color: #fff; }
+
+        .breathing-circle {
+            width: 150px; height: 150px;
+            border-radius: 50%;
+            background: var(--primary);
+            opacity: 0.8;
+            margin: 2rem auto;
+            animation: breatheAnim 12s infinite ease-in-out;
+            box-shadow: 0 0 30px rgba(244, 194, 194, 0.5);
+        }
+
+        @keyframes breatheAnim {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.8); }
+            60% { transform: scale(1.8); }
+            100% { transform: scale(1); }
+        }
+
+        #bubble-container { position: relative; width: 100%; height: 300px; overflow: hidden; background: rgba(255,255,255,0.2); border-radius: 20px; }
+        .bubble { position: absolute; border-radius: 50%; cursor: pointer; animation: floatUpBub 4s linear forwards; }
+        @keyframes floatUpBub { to { transform: translateY(-350px); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div class="heart-bg" id="heart-bg"></div>
+
+    <div id="login-screen" class="fade-in">
+        <div style="font-size: 3rem; margin-bottom: 10px;">🌸</div>
+        <h1>Hey Jeeya</h1>
+        <p>One breath at a time.</p>
+        <input type="text" id="username" placeholder="Enter your name" value="Jeeya">
+        <button class="btn" onclick="login()">Let's Begin</button>
+    </div>
+
+    <div id="dashboard" class="hidden">
+        <div class="header">
+            <span class="greeting" id="greeting-text">Hi, BUTKIIIII 🌼</span>
+            <span style="font-size: 1.5rem; color: white;">✨</span>
+        </div>
+
+        <div class="countdown-card pulse">
+            <div class="days-left" id="days-count">--</div>
+            <div class="days-label" id="days-text">days to go</div>
+            <div class="date-display">Target: Feb 17, 2026 (IST)</div>
+        </div>
+
+        <div class="grid">
+            <button class="card-btn" onclick="openPanic()" style="border-bottom: 4px solid var(--love);">
+                <span class="icon">❤️</span>
+                <span>Panic Button</span>
+            </button>
+            <button class="card-btn" onclick="openGame()" style="border-bottom: 4px solid var(--accent);">
+                <span class="icon">🫧</span>
+                <span>Some fun 😜</span>
+            </button>
+            <button class="card-btn" onclick="openBreathe()" style="border-bottom: 4px solid var(--primary);">
+                <span class="icon">🧘</span>
+                <span>Breathe</span>
+            </button>
+            <button class="card-btn" onclick="openNote()" style="border-bottom: 4px solid #fff;">
+                <span class="icon">💌</span>
+                <span>Special Note ✨🫶</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="breathe-overlay" class="overlay hidden">
+        <button class="close-btn" onclick="closeOverlays()">×</button>
+        <h2 id="breathe-instruction" style="color: white;">Inhale...</h2>
+        <div class="breathing-circle"></div>
+        <p style="margin-top: 2rem; color: white; font-weight: 600;">Follow the circle.</p>
+    </div>
+
+    <div id="game-overlay" class="overlay hidden">
+        <button class="close-btn" onclick="closeOverlays()">×</button>
+        <h2 style="color: white; margin-bottom: 10px;">Pop the stress!</h2>
+        <p id="score" style="color: white; font-size: 1.5rem; margin-bottom: 10px;">Score: 0</p>
+        <div id="bubble-container"></div>
+    </div>
+
+    <div id="note-overlay" class="overlay hidden">
+        <button class="close-btn" onclick="closeOverlays()">×</button>
+        <div style="max-width: 320px; text-align: left; background: #fff; padding: 2rem; border-radius: 24px; box-shadow: var(--shadow);">
+            <h3 style="color: var(--bg-color); margin-bottom: 1rem;">Hey Jeeya,</h3>
+            <p style="line-height: 1.6; color: #555; font-size: 0.95rem;">
+                I built this because I know how hard you’re working. Please don't worry about it so much, just work on your studies and everything will be fine. Just believe in yourself.
+                <br><br>
+                Remember: The exam is just a piece of paper. You are smart, capable, and I’m incredibly proud of you.
+                <br><br>
+                You’ve got this.
+            </p>
+            <p style="text-align: right; margin-top: 1rem; font-weight: bold; color: var(--bg-color);">— Your biggest supporter, Neel Patel</p>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. HEARTS ANIMATION ---
+        function createHeart() {
+            const heartBg = document.getElementById('heart-bg');
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            heart.style.opacity = Math.random() * 0.5 + 0.2;
+            heart.style.fontSize = (Math.random() * 1 + 1) + 'rem';
+            
+            heartBg.appendChild(heart);
+            setTimeout(() => { heart.remove(); }, 10000);
+        }
+        setInterval(createHeart, 800);
+
+        // --- 2. LOGIN & COUNTDOWN ---
+        const TARGET_DATE = new Date("2026-02-17T00:00:00+05:30");
+
+        function login() {
+            const nameInput = document.getElementById('username').value || "Jeeya";
+            localStorage.setItem('jeeya_name', nameInput);
+            document.getElementById('login-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('login-screen').classList.add('hidden');
+                initDashboard(nameInput);
+            }, 500);
+        }
+
+        function initDashboard(name) {
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('fade-in');
+            document.getElementById('greeting-text').innerText = `Hi, ${name} 🌼`;
+            confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 }, colors: ['#F4C2C2', '#ffffff'] });
+            updateCountdown();
+        }
+
+        window.onload = () => {
+            const savedName = localStorage.getItem('jeeya_name');
+            if (savedName) {
+                document.getElementById('login-screen').classList.add('hidden');
+                initDashboard(savedName);
+            }
+        };
+
+        function updateCountdown() {
+            const now = new Date();
+            const diff = TARGET_DATE - now;
+            const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
+            const daysElement = document.getElementById('days-count');
+            const textElement = document.getElementById('days-text');
+
+            if (daysLeft > 1) { daysElement.innerText = daysLeft; textElement.innerText = "days to go"; }
+            else if (daysLeft === 1) { daysElement.innerText = "1"; textElement.innerText = "day left (Tomorrow!)"; }
+            else if (daysLeft === 0) { daysElement.innerText = "0"; textElement.innerText = "It's Exam Day!"; }
+            else { daysElement.innerText = "✨"; textElement.innerText = "You did it!"; }
+        }
+
+        // --- 3. MODALS & GAMES ---
+        function closeOverlays() {
+            document.querySelectorAll('.overlay').forEach(el => el.classList.add('hidden'));
+            clearInterval(breatheInterval);
+        }
+
+        let breatheInterval;
+        function openPanic() { openBreathe(); }
+        function openBreathe() {
+            document.getElementById('breathe-overlay').classList.remove('hidden');
+            const text = document.getElementById('breathe-instruction');
+            let phase = 0;
+            text.innerText = "Breathe In...";
+            breatheInterval = setInterval(() => {
+                phase = (phase + 1) % 3;
+                text.innerText = phase === 0 ? "Breathe In..." : phase === 1 ? "Hold..." : "Breathe Out...";
+            }, 4000); 
+        }
+
+        function openNote() { document.getElementById('note-overlay').classList.remove('hidden'); }
+
+        function openGame() {
+            document.getElementById('game-overlay').classList.remove('hidden');
+            const container = document.getElementById('bubble-container');
+            container.innerHTML = '';
+            let score = 0;
+            let spawner = setInterval(() => {
+                if(document.getElementById('game-overlay').classList.contains('hidden')) { clearInterval(spawner); return; }
+                const b = document.createElement('div');
+                b.classList.add('bubble');
+                const size = Math.random() * 40 + 30;
+                b.style.width = size + 'px'; b.style.height = size + 'px';
+                b.style.left = Math.random() * (container.offsetWidth - 50) + 'px';
+                b.style.bottom = '-50px';
+                b.style.backgroundColor = 'rgba(255,255,255,0.8)';
+                b.style.border = '2px solid var(--primary)';
+                b.onclick = () => { b.remove(); score++; document.getElementById('score').innerText = "Score: " + score; };
+                container.appendChild(b);
+                setTimeout(() => b.remove(), 4000);
+            }, 600);
+        }
+    </script>
+</body>
+</html>
